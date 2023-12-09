@@ -19,7 +19,7 @@ datasets:
     type: RealESRGANPairedDataset
     dataroot_lq: datasets/MRI2023/TrainLR/NEAREST
     dataroot_gt: datasets/MRI2023/GT
-    meta_info: datasets/MRI2023/GT/meta_info/MRI2023_brain_train.txt
+    meta_info: datasets/MRI2023/GT/meta_info/MRI2023_brain_train_finetune_piared.txt
     io_backend:
       type: disk
 
