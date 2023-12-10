@@ -27,7 +27,7 @@ poisson_scale_range2: [0.05, 0.2] # 泊松噪声强度范围
 gray_noise_prob2: 0.1 # 40% 概率加入灰度噪声
 jpeg_range2: [80, 95] # jpeg 压缩范围
 
-gt_size: 480
+gt_size: 256
 queue_size: 180 # 队列大小
 
 # dataset and data loader settings
@@ -74,7 +74,7 @@ datasets:
 
     final_sinc_prob: 0.8
 
-    gt_size: 480
+    gt_size: 256
     use_hflip: True
     use_rot: False
 
