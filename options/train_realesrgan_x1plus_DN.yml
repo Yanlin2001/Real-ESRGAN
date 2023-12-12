@@ -76,8 +76,8 @@ datasets:
   val:
     name: validation
     type: PairedImageDataset
-    dataroot_gt: /kaggle/input/ct-sub/CT-SUB
-    dataroot_lq: /kaggle/input/ct-sub/CT-SUB
+    dataroot_gt: datasets/MRI2023/GT/Validation
+    dataroot_lq: datasets/MRI2023/ValLR/NEAREST
     io_backend:
       type: disk
 
@@ -161,15 +161,15 @@ train:
 
 # Uncomment these for validation
 # validation settings
-# val:
-#   val_freq: !!float 5e3
-#   save_img: True
+val:
+  val_freq: !!float 5e3
+  save_img: True
 
-#   metrics:
-#     psnr: # metric name
-#       type: calculate_psnr
-#       crop_border: 4
-#       test_y_channel: false
+  metrics:
+    psnr: # metric name
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
 
 # logging settings
 logger:
