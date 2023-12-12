@@ -76,8 +76,8 @@ datasets:
   val:
     name: validation
     type: PairedImageDataset
-    dataroot_gt: /kaggle/input/ct-sub/CT-SUB
-    dataroot_lq: /kaggle/input/ct-sub/CT-SUB
+    dataroot_gt: /kaggle/input/deblur-ct-02
+    dataroot_lq: /kaggle/input/deblur-ct-02
     io_backend:
       type: disk
 
