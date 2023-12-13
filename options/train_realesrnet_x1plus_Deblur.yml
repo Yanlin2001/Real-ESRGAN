@@ -1,5 +1,5 @@
 # general settings
-name: train_RealESRNetx1_Deblur_CT_deblur
+name: train_RealESRNetx1_Deblur_CT_deblur_40000
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -106,7 +106,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: /kaggle/working/Real-ESRGAN/experiments/train_RealESRNetx1_Deblur_CT/models/net_g_latest.pth
+  pretrain_network_g: experiments/pretrained_models/RealESRGAN_x4plus.pth
   param_key_g: params_ema
   strict_load_g: False
   resume_state: ~
@@ -122,10 +122,10 @@ train:
 
   scheduler:
     type: MultiStepLR
-    milestones: [10000]
+    milestones: [40000]
     gamma: 0.5
 
-  total_iter: 10000
+  total_iter: 40000
   warmup_iter: -1 # no warm up
 
   # losses
