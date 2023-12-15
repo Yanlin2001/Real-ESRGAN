@@ -15,7 +15,7 @@ gaussian_noise_prob: 0.01 # 50% 概率加入高斯噪声
 noise_range: [0, 1] # 噪声强度范围
 poisson_scale_range: [0.01, 0.02] # 泊松噪声强度范围
 gray_noise_prob: 0.01 # 40% 概率加入灰度噪声
-jpeg_range: [100, 100] # jpeg 压缩范围
+jpeg_range: [98, 99] # jpeg 压缩范围
 
 # the second degradation process
 second_blur_prob: 0.9 # 80% 概率加入模糊
@@ -25,7 +25,7 @@ gaussian_noise_prob2: 0.2 # 50% 概率加入高斯噪声
 noise_range2: [0, 1] # 噪声强度范围
 poisson_scale_range2: [0.01, 0.02] # 泊松噪声强度范围
 gray_noise_prob2: 0.01 # 40% 概率加入灰度噪声
-jpeg_range2: [100, 100] # jpeg 压缩范围
+jpeg_range2: [98, 99] # jpeg 压缩范围
 
 gt_size: 256
 queue_size: 180 # 队列大小
