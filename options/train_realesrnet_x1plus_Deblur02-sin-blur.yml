@@ -11,10 +11,10 @@ gt_usm: True # USM the ground-truth
 # the first degradation process
 resize_prob: [0.1, 0.1, 0.8] # up, down, keep // 20% 上采样, 70% 下采样, 10% 保持 (概率：probability)
 resize_range: [0.9, 1.1] # 0.15-1.5 倍 (范围：range)
-gaussian_noise_prob: 0.0 # 50% 概率加入高斯噪声
+gaussian_noise_prob: 0.001 # 50% 概率加入高斯噪声
 noise_range: [0.001, 0.002] # 噪声强度范围
 poisson_scale_range: [0.001, 0.002] # 泊松噪声强度范围
-gray_noise_prob: 0.0 # 40% 概率加入灰度噪声
+gray_noise_prob: 0.001 # 40% 概率加入灰度噪声
 jpeg_range: [100, 100] # jpeg 压缩范围
 
 # the second degradation process
@@ -24,7 +24,7 @@ resize_range2: [0.9, 1.1] # 0.3-1.2 倍
 gaussian_noise_prob2: 0.2 # 50% 概率加入高斯噪声
 noise_range2: [1, 3] # 噪声强度范围
 poisson_scale_range2: [0.001, 0.002] # 泊松噪声强度范围
-gray_noise_prob2: 0.0 # 40% 概率加入灰度噪声
+gray_noise_prob2: 0.001 # 40% 概率加入灰度噪声
 jpeg_range2: [100, 100] # jpeg 压缩范围
 
 gt_size: 256
@@ -51,7 +51,7 @@ datasets:
         "plateau_aniso",
       ]
     kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
-    sinc_prob: 0.0
+    sinc_prob: 0.001
     blur_sigma: [0.2, 3]
     betag_range: [0.5, 4]
     betap_range: [1, 2]
@@ -67,12 +67,12 @@ datasets:
         "plateau_aniso",
       ]
     kernel_prob2: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
-    sinc_prob2: 0.1
+    sinc_prob2: 0.001
     blur_sigma2: [0.2, 1.5]
     betag_range2: [0.5, 4]
     betap_range2: [1, 2]
 
-    final_sinc_prob: 0.0
+    final_sinc_prob: 0.001
 
     gt_size: 256
     use_hflip: True
