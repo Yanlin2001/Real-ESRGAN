@@ -13,7 +13,7 @@ resize_prob: [0.1, 0.1, 0.8] # up, down, keep // 20% 上采样, 70% 下采样, 1
 resize_range: [0.9, 1.1] # 0.15-1.5 倍 (范围：range)
 gaussian_noise_prob: 0.001 # 50% 概率加入高斯噪声
 noise_range: [0, 1] # 噪声强度范围
-poisson_scale_range: [0.001, 0.002] # 泊松噪声强度范围
+poisson_scale_range: [0.01, 0.02] # 泊松噪声强度范围
 gray_noise_prob: 0.001 # 40% 概率加入灰度噪声
 jpeg_range: [100, 100] # jpeg 压缩范围
 
@@ -23,7 +23,7 @@ resize_prob2: [0.1, 0.1, 0.8] # up, down, keep // 30% 上采样, 40% 下采样, 
 resize_range2: [0.9, 1.1] # 0.3-1.2 倍
 gaussian_noise_prob2: 0.2 # 50% 概率加入高斯噪声
 noise_range2: [0, 1] # 噪声强度范围
-poisson_scale_range2: [0.001, 0.002] # 泊松噪声强度范围
+poisson_scale_range2: [0.01, 0.02] # 泊松噪声强度范围
 gray_noise_prob2: 0.001 # 40% 概率加入灰度噪声
 jpeg_range2: [100, 100] # jpeg 压缩范围
 
