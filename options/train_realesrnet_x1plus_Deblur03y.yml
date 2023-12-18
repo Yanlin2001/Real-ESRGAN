@@ -1,5 +1,5 @@
 # general settings
-name: train_RealESRNetx1_Deblur_CT_deblur_addblur
+name: train_RealESRNetx1_Deblur_CT_deblur_40000+40000
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -43,12 +43,12 @@ datasets:
     blur_kernel_size: 21
     kernel_list:
       [
-        "iso",
-        "aniso",
-        "generalized_iso",
-        "generalized_aniso",
-        "plateau_iso",
-        "plateau_aniso",
+        "iso", # isotropic，各向同性
+        "aniso", # anisotropic，各向异性
+        "generalized_iso", # generalized isotropic，广义各向同性
+        "generalized_aniso", # generalized anisotropic，广义各向异性
+        "plateau_iso", # plateau isotropic，平台各向同性
+        "plateau_aniso", # plateau anisotropic，平台各向异性
       ]
     kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
     sinc_prob: 0.01
@@ -106,7 +106,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/pretrained_models/RealESRGAN_x4plus.pth
+  pretrain_network_g: /kaggle/input/sinblur/net_g_40000.pth
   param_key_g: params_ema
   strict_load_g: False
   resume_state: ~
