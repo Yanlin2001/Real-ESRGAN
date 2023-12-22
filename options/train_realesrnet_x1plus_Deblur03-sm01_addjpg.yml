@@ -1,0 +1,161 @@
+# general settings
+name: train_RealESRNetx1_Deblur_CT_smouse_40000
+model_type: RealESRNetModel
+scale: 1
+num_gpu: auto # auto: can infer from your visible devices automatically. official: 4 GPUs
+manual_seed: 0
+
+# ----------------- options for synthesizing training data in RealESRNetModel ----------------- #
+gt_usm: True # USM the ground-truth
+
+# the first degradation process
+resize_prob: [0.1, 0.1, 0.8] # up, down, keep // 20% 上采样, 70% 下采样, 10% 保持 (概率：probability)
+resize_range: [0.9, 1.1] # 0.15-1.5 倍 (范围：range)
+gaussian_noise_prob: 0.01 # 50% 概率加入高斯噪声
+noise_range: [0, 1] # 噪声强度范围
+poisson_scale_range: [0.01, 0.02] # 泊松噪声强度范围
+gray_noise_prob: 0.01 # 40% 概率加入灰度噪声
+jpeg_range: [30, 95] # jpeg 压缩范围
+
+# the second degradation process
+second_blur_prob: 0.9 # 80% 概率加入模糊
+resize_prob2: [0.1, 0.1, 0.8] # up, down, keep // 30% 上采样, 40% 下采样, 30% 保持
+resize_range2: [0.9, 1.1] # 0.3-1.2 倍
+gaussian_noise_prob2: 0.01 # 50% 概率加入高斯噪声
+noise_range2: [0, 1] # 噪声强度范围
+poisson_scale_range2: [0.01, 0.02] # 泊松噪声强度范围
+gray_noise_prob2: 0.01 # 40% 概率加入灰度噪声
+jpeg_range2: [30, 95] # jpeg 压缩范围，不能为 100
+
+gt_size: 256
+queue_size: 180 # 队列大小
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: CT
+    type: RealESRGANDataset
+    dataroot_gt: /kaggle/input/sub-div2k-blur/SUB3/SUB3
+    meta_info: datasets/CT/meta_info/CT-meta.txt
+    io_backend:
+      type: disk
+
+    blur_kernel_size: 21
+    kernel_list:
+      [
+        "iso",
+        "aniso",
+        "generalized_iso",
+        "generalized_aniso",
+        "plateau_iso",
+        "plateau_aniso",
+      ]
+    kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    sinc_prob: 0.01
+    blur_sigma: [0.2, 3]
+    betag_range: [0.5, 4]
+    betap_range: [1, 2]
+
+    blur_kernel_size2: 21
+    kernel_list2:
+      [
+        "iso",
+        "aniso",
+        "generalized_iso",
+        "generalized_aniso",
+        "plateau_iso",
+        "plateau_aniso",
+      ]
+    kernel_prob2: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    sinc_prob2: 0.01
+    blur_sigma2: [0.2, 1.5]
+    betag_range2: [0.5, 4]
+    betap_range2: [1, 2]
+
+    final_sinc_prob: 0.01
+
+    gt_size: 256
+    use_hflip: True
+    use_rot: False
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 6
+    batch_size_per_gpu: 6
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  # Uncomment these for validation
+  val:
+    name: validation
+    type: PairedImageDataset
+    dataroot_gt: /kaggle/input/s-mouse
+    dataroot_lq: /kaggle/input/s-mouse
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: RRDBNet
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 23
+  num_grow_ch: 32
+  scale: 1
+
+# path
+path:
+  pretrain_network_g: experiments/pretrained_models/RealESRGAN_x4plus.pth
+  param_key_g: params_ema
+  strict_load_g: False
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: Adam
+    lr: !!float 2e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [40000]
+    gamma: 0.5
+
+  total_iter: 40000
+  warmup_iter: -1 # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0
+    reduction: mean
+
+# Uncomment these for validation
+# validation settings
+val:
+  val_freq: !!float 5e3
+  save_img: True
+
+  metrics:
+    psnr: # metric name
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
