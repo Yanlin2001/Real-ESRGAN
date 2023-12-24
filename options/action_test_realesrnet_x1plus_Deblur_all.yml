@@ -89,8 +89,8 @@ datasets:
   val:
     name: validation
     type: PairedImageDataset
-    dataroot_gt: /kaggle/input/sm60000
-    dataroot_lq: /kaggle/input/sm60000
+    dataroot_gt: /kaggle/input/sm60000-01
+    dataroot_lq: /kaggle/input/sm60000-01
     io_backend:
       type: disk
 
