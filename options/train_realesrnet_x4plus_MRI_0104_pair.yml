@@ -37,7 +37,7 @@ datasets:
     name: validation_NN
     type: PairedImageDataset
     dataroot_gt: datasets/MRI_Brain01/Val/HR
-    dataroot_lq: datasets/MRI_Brain01/Val/LR
+    dataroot_lq: datasets/MRI_Brain01/Val/NN_LR
     io_backend:
       type: disk
 
