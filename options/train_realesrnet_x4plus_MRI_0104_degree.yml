@@ -36,7 +36,7 @@ datasets:
     name: MRI2023_brain_train
     type: RealESRGANDataset
     dataroot_gt: datasets/MRI_Brain01/Train
-    meta_info: datasets/MRI_Brain01/Train/HR/meta_info/MRI_Brain01_info.txt
+    meta_info: datasets/MRI_Brain01/Train/meta_info/MRI_Brain01_info.txt
     io_backend:
       type: disk
 
