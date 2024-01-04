@@ -15,8 +15,8 @@ datasets:
   train:
     name: MRI_Brain01
     type: RealESRGANPairedDataset
-    dataroot_gt: MRI_Brain01/Train
-    dataroot_lq: MRI_Brain01/Train
+    dataroot_gt: datasets/MRI_Brain01/Train
+    dataroot_lq: datasets/MRI_Brain01/Train
     meta_info: datasets/MRI_Brain01/meta_info/meta_info_MRI_Brain01_pair.txt
     io_backend:
       type: disk
