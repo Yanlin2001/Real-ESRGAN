@@ -1,7 +1,7 @@
 # general settings
-name: 001_MRI2023_brain_train_20240105
+name: 001_MRI2024_brain_train_20240106
 model_type: RealESRNetModel
-scale: 4
+scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
 manual_seed: 0
 
@@ -9,15 +9,14 @@ gt_usm: True  # USM the ground-truth
 
 high_order_degradation: False # do not use the high-order degradation generation process
 
-
 # dataset and data loader settings
 datasets:
   train:
     name: MRI_Brain01
     type: RealESRGANPairedDataset
-    dataroot_gt: datasets/MRI_Brain01/Train
-    dataroot_lq: datasets/MRI_Brain01/Train
-    meta_info: datasets/MRI_Brain01/meta_info/meta_info_MRI_Brain01_pair.txt
+    dataroot_gt: datasets/Brain_MRI_2024/train
+    dataroot_lq: datasets/Brain_MRI_2024/train
+    meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024_pair.txt
     io_backend:
       type: disk
 
@@ -36,8 +35,8 @@ datasets:
   val:
     name: validation_NN
     type: PairedImageDataset
-    dataroot_gt: datasets/MRI_Brain01/Val/HR
-    dataroot_lq: datasets/MRI_Brain01/Val/NN_LR
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image
+    dataroot_lq: datasets/Brain_MRI_2024/val/4_fold_image
     io_backend:
       type: disk
 
@@ -49,11 +48,12 @@ network_g:
   num_feat: 64
   num_block: 23
   num_grow_ch: 32
+  scale: 1
 
 # path
 path:
   #pretrain_network_g: experiments/pretrained_models/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth
-  pretrain_network_g: experiments/001_MRI2023_brain_train_20240104/models/net_g_40000.pth
+  pretrain_network_g: ~
   param_key_g: params_ema
   strict_load_g: true
   resume_state: ~
