@@ -67,6 +67,7 @@ class RealESRGANModel(SRGANModel):
     def feed_data(self, data):
         """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         """
+        # 读取YML配置文件中的high_order_degradation,默认为True
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)

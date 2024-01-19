@@ -65,11 +65,14 @@ class RealESRNetModel(SRModel):
 
     @torch.no_grad()
     def feed_data(self, data):
-        """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
+        """
+        Accept data from dataloader, and then add two-order degradations to obtain LQ images.
+        接受来自数据加载器的数据，然后添加二阶降级以获得 LQ 图像。
         """
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
+
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
                 self.gt = self.usm_sharpener(self.gt)
@@ -80,10 +83,11 @@ class RealESRNetModel(SRModel):
 
             ori_h, ori_w = self.gt.size()[2:4]
 
-            # ----------------------- The first degradation process ----------------------- #
+            # ---------- The first degradation process (第一个退化过程) ------------------ #
             # blur
             out = filter2D(self.gt, self.kernel1)
-            # random resize
+
+            # random resize(随机调整大小)
             updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob'])[0]
             if updown_type == 'up':
                 scale = np.random.uniform(1, self.opt['resize_range'][1])
@@ -93,7 +97,8 @@ class RealESRNetModel(SRModel):
                 scale = 1
             mode = random.choice(['area', 'bilinear', 'bicubic'])
             out = F.interpolate(out, scale_factor=scale, mode=mode)
-            # add noise
+
+            # add noise(添加噪声)
             gray_noise_prob = self.opt['gray_noise_prob']
             if np.random.uniform() < self.opt['gaussian_noise_prob']:
                 out = random_add_gaussian_noise_pt(
@@ -105,16 +110,17 @@ class RealESRNetModel(SRModel):
                     gray_prob=gray_noise_prob,
                     clip=True,
                     rounds=False)
-            # JPEG compression
+
+            # JPEG compression(压缩)
             jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range'])
             out = torch.clamp(out, 0, 1)  # clamp to [0, 1], otherwise JPEGer will result in unpleasant artifacts
             out = self.jpeger(out, quality=jpeg_p)
 
-            # ----------------------- The second degradation process ----------------------- #
-            # blur
+            # ------------- The second degradation process (第二个退化过程) ------------- #
+            # blur(模糊)
             if np.random.uniform() < self.opt['second_blur_prob']:
                 out = filter2D(out, self.kernel2)
-            # random resize
+            # random resize(随机调整大小)
             updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob2'])[0]
             if updown_type == 'up':
                 scale = np.random.uniform(1, self.opt['resize_range2'][1])
@@ -125,7 +131,7 @@ class RealESRNetModel(SRModel):
             mode = random.choice(['area', 'bilinear', 'bicubic'])
             out = F.interpolate(
                 out, size=(int(ori_h / self.opt['scale'] * scale), int(ori_w / self.opt['scale'] * scale)), mode=mode)
-            # add noise
+            # add noise(添加噪声)
             gray_noise_prob = self.opt['gray_noise_prob2']
             if np.random.uniform() < self.opt['gaussian_noise_prob2']:
                 out = random_add_gaussian_noise_pt(
