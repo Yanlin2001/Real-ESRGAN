@@ -35,7 +35,7 @@ datasets:
   val:
     name: val_008
     type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-008
     dataroot_lq: datasets/Brain_MRI_2024/val/008-4
     io_backend:
       type: disk
@@ -43,7 +43,7 @@ datasets:
   val_2:
     name: val_006
     type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006
     dataroot_lq: datasets/Brain_MRI_2024/val/006-4
     io_backend:
       type: disk
@@ -51,7 +51,7 @@ datasets:
   val_3:
     name: val_004
     type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004
     dataroot_lq: datasets/Brain_MRI_2024/val/004-4
     io_backend:
       type: disk
@@ -59,7 +59,7 @@ datasets:
   val_4:
     name: val_002
     type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-002
     dataroot_lq: datasets/Brain_MRI_2024/val/002-4
     io_backend:
       type: disk
