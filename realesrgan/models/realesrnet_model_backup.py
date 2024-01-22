@@ -73,9 +73,6 @@ class RealESRNetModel(SRModel):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
 
-            # ++ lq data synthesis ++
-            self.usp = data['lq'].to(self.device) # undersampled
-
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
                 self.gt = self.usm_sharpener(self.gt)
@@ -84,11 +81,11 @@ class RealESRNetModel(SRModel):
             self.kernel2 = data['kernel2'].to(self.device)
             self.sinc_kernel = data['sinc_kernel'].to(self.device)
 
-            ori_h, ori_w = self.usp.size()[2:4]
+            ori_h, ori_w = self.gt.size()[2:4]
 
             # ---------- The first degradation process (第一个退化过程) ------------------ #
             # blur
-            out = filter2D(self.usp, self.kernel1)
+            out = filter2D(self.gt, self.kernel1)
 
             # random resize(随机调整大小)
             updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob'])[0]
