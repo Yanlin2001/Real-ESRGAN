@@ -102,6 +102,22 @@ datasets:
     io_backend:
       type: disk
 
+  val_5:
+    name: val_006_4_1
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006-4-1
+    dataroot_lq: datasets/Brain_MRI_2024/val/006-4-1
+    io_backend:
+      type: disk
+
+  val_6:
+    name: val_006_2
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006-2
+    dataroot_lq: datasets/Brain_MRI_2024/val/006-2
+    io_backend:
+      type: disk
+
 # network structures
 network_g:
   type: RRDBNet

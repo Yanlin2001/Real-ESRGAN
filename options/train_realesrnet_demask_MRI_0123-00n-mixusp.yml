@@ -1,5 +1,5 @@
 # general settings
-name: 001_MRI2024_brain_train_20240123_006_diff
+name: 001_MRI2024_brain_train_20240123_mixusp
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -93,7 +93,7 @@ network_g:
 # path
 path:
   #pretrain_network_g: experiments/pretrained_models/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth / /kaggle/input/net-g-40000-b2024/net_g_40000_b2024.pth
-  pretrain_network_g: /kaggle/input/006-4-20000/net_g_20000.pth
+  pretrain_network_g: ~
   param_key_g: params_ema
   strict_load_g: true
   resume_state: ~
@@ -109,10 +109,10 @@ train:
 
   scheduler:
     type: MultiStepLR
-    milestones: [20000]
+    milestones: [40000]
     gamma: 0.5
 
-  total_iter: 20000
+  total_iter: 40000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -124,7 +124,7 @@ train:
 # Uncomment these for validation
 # validation settings
 val:
-  val_freq: !!float 5e3
+  val_freq: !!float 1e4
   save_img: True
 
   metrics:
