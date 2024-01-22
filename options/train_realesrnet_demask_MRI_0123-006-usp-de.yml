@@ -1,5 +1,5 @@
 # general settings
-name: 001_MRI2024_brain_train_20240121_006_multi
+name: 001_MRI2024_brain_train_20240123_006_usp_de
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -35,7 +35,8 @@ datasets:
     name: MRI_Brain01
     type: RealESRGANDataset
     dataroot_gt: datasets/Brain_MRI_2024/train
-    meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024.txt
+    dataroot_lq: datasets/Brain_MRI_2024/train
+    meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024_usp.txt
     io_backend:
       type: disk
 
