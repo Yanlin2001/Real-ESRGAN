@@ -1,5 +1,5 @@
 # general settings
-name: 001_MRI2024_brain_train_20240123_006_diff
+name: 001_MRI2024_brain_train_20240123_006_diff2
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
