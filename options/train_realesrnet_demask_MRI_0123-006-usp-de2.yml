@@ -9,22 +9,22 @@ gt_usm: True  # USM the ground-truth
 
 # the first degradation process
 resize_prob: [0.0, 1.0, 0.0]  # up, down, keep
-resize_range: [0.9, 1.1]
+resize_range: [1.0, 1.0]
 gaussian_noise_prob: 0.0
-noise_range: [1, 30]
-poisson_scale_range: [0.05, 3]
+noise_range: [1, 1]
+poisson_scale_range: [0.01, 0.01]
 gray_noise_prob: 0.0
-jpeg_range: [30, 95]
+jpeg_range: [99, 99]
 
 # the second degradation process
 second_blur_prob: 0.0
 resize_prob2: [0.0, 1.0, 0.0]  # up, down, keep
-resize_range2: [0.9, 1.1]
+resize_range2: [1.0, 1.0]
 gaussian_noise_prob2: 0.0
-noise_range2: [1, 25]
-poisson_scale_range2: [0.05, 2.5]
+noise_range2: [1, 1]
+poisson_scale_range2: [0.01, 0.01]
 gray_noise_prob2: 0.0
-jpeg_range2: [30, 95]
+jpeg_range2: [99, 99]
 
 gt_size: 256
 queue_size: 180
@@ -40,9 +40,9 @@ datasets:
     io_backend:
       type: disk
 
-    blur_kernel_size: 21
+    blur_kernel_size: 1
     kernel_list: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
-    kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    kernel_prob: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
     sinc_prob: 0.0
     blur_sigma: [0.2, 3]
     betag_range: [0.5, 4]
@@ -50,7 +50,7 @@ datasets:
 
     blur_kernel_size2: 21
     kernel_list2: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
-    kernel_prob2: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    kernel_prob2: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
 
     sinc_prob2: 0.0
     blur_sigma2: [0.2, 1.5]
@@ -150,10 +150,10 @@ train:
 
   scheduler:
     type: MultiStepLR
-    milestones: [40000]
+    milestones: [20000]
     gamma: 0.5
 
-  total_iter: 40000
+  total_iter: 20000
   warmup_iter: -1  # no warm up
 
   # losses
@@ -165,7 +165,7 @@ train:
 # Uncomment these for validation
 # validation settings
 val:
-  val_freq: !!float 1e4
+  val_freq: !!float 5e3
   save_img: True
 
   metrics:
