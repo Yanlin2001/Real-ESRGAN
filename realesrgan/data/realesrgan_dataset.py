@@ -38,19 +38,15 @@ class RealESRGANDataset(data.Dataset):
         self.opt = opt
         self.file_client = None
         self.io_backend_opt = opt['io_backend']
-        self.gt_folder = opt['dataroot_gt']
-        self.lq_folder = opt['dataroot_lq']
+        self.gt_folder, self.lq_folder = opt['dataroot_gt'], opt['dataroot_lq']
+        self.filename_tmpl = opt['filename_tmpl'] if 'filename_tmpl' in opt else '{}'
 
         # file client (lmdb io backend)
         if self.io_backend_opt['type'] == 'lmdb':
             self.io_backend_opt['db_paths'] = [self.lq_folder, self.gt_folder]
             self.io_backend_opt['client_keys'] = ['lq', 'gt']
-            self.paths = paired_paths_from_lmdb([self.lq_folder, self.gt_folder], ['lq', 'gt']) #add, no use?
-            if not self.gt_folder.endswith('.lmdb'):
-                raise ValueError(f"'dataroot_gt' should end with '.lmdb', but received {self.gt_folder}")
-            with open(osp.join(self.gt_folder, 'meta_info.txt')) as fin:
-                self.paths = [line.split('.')[0] for line in fin]
-        else:
+            self.paths = paired_paths_from_lmdb([self.lq_folder, self.gt_folder], ['lq', 'gt'])
+        elif 'meta_info' in self.opt and self.opt['meta_info'] is not None:
             # disk backend with meta_info
             # Each line in the meta_info describes the relative path to an image
             with open(self.opt['meta_info']) as fin:
@@ -61,6 +57,12 @@ class RealESRGANDataset(data.Dataset):
                 gt_path = os.path.join(self.gt_folder, gt_path)
                 lq_path = os.path.join(self.lq_folder, lq_path)
                 self.paths.append(dict([('gt_path', gt_path), ('lq_path', lq_path)]))
+        else:
+            # disk backend
+            # it will scan the whole folder to get meta info
+            # it will be time-consuming for folders with too many files. It is recommended using an extra meta txt file
+            self.paths = paired_paths_from_folder([self.lq_folder, self.gt_folder], ['lq', 'gt'], self.filename_tmpl)
+
 
         # blur settings for the first degradation
         self.blur_kernel_size = opt['blur_kernel_size']

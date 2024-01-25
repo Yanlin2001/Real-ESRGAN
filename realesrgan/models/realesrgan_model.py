@@ -69,7 +69,7 @@ class RealESRGANModel(SRGANModel):
         """
         # 读取YML配置文件中的high_order_degradation,默认为True
         if self.is_train and self.opt.get('high_order_degradation', True):
-            # training data synthesis
+            # training data synthesis （训练数据合成）
             self.gt = data['gt'].to(self.device)
             self.gt_usm = self.usm_sharpener(self.gt)
 
@@ -80,9 +80,10 @@ class RealESRGANModel(SRGANModel):
             ori_h, ori_w = self.gt.size()[2:4]
 
             # ----------------------- The first degradation process ----------------------- #
-            # blur
+            ''' blur '''
             out = filter2D(self.gt_usm, self.kernel1)
             # random resize
+            # 选择尺寸变化的方式，以及尺寸变化的范围
             updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob'])[0]
             if updown_type == 'up':
                 scale = np.random.uniform(1, self.opt['resize_range'][1])
@@ -90,9 +91,11 @@ class RealESRGANModel(SRGANModel):
                 scale = np.random.uniform(self.opt['resize_range'][0], 1)
             else:
                 scale = 1
+            # 选择插值方式
             mode = random.choice(['area', 'bilinear', 'bicubic'])
             out = F.interpolate(out, scale_factor=scale, mode=mode)
-            # add noise
+
+            ''' add noise '''
             gray_noise_prob = self.opt['gray_noise_prob']
             if np.random.uniform() < self.opt['gaussian_noise_prob']:
                 out = random_add_gaussian_noise_pt(
@@ -104,13 +107,14 @@ class RealESRGANModel(SRGANModel):
                     gray_prob=gray_noise_prob,
                     clip=True,
                     rounds=False)
-            # JPEG compression
+
+            ''' JPEG compression '''
             jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range'])
             out = torch.clamp(out, 0, 1)  # clamp to [0, 1], otherwise JPEGer will result in unpleasant artifacts
             out = self.jpeger(out, quality=jpeg_p)
 
             # ----------------------- The second degradation process ----------------------- #
-            # blur
+            ''' blur '''
             if np.random.uniform() < self.opt['second_blur_prob']:
                 out = filter2D(out, self.kernel2)
             # random resize
@@ -163,10 +167,10 @@ class RealESRGANModel(SRGANModel):
                 out = F.interpolate(out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode)
                 out = filter2D(out, self.sinc_kernel)
 
-            # clamp and round
+            # clamp and round (
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
 
-            # random crop
+            # random crop （随机裁剪）
             gt_size = self.opt['gt_size']
             (self.gt, self.gt_usm), self.lq = paired_random_crop([self.gt, self.gt_usm], self.lq, gt_size,
                                                                  self.opt['scale'])
