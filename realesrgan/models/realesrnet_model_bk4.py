@@ -8,7 +8,6 @@ from basicsr.utils import DiffJPEG, USMSharp
 from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
 from torch.nn import functional as F
-import datetime
 import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 
@@ -74,6 +73,16 @@ class RealESRNetModel(SRModel):
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
+            print("self.gt.shape: ", self.gt.shape)
+            import datetime
+            import matplotlib.pyplot as plt
+            import torchvision.transforms as transforms
+            sample_index = 0  # Choose the index of the sample you want to visualize
+            raw_gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
+            current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            save_path = f"/kaggle/working/raw_gt_image_{current_time}.png"
+            raw_gt_image.save(save_path)
+            print(f"Image saved at: {save_path}")
 
             # ++ lq data synthesis ++
             self.usp = data['lq'].to(self.device) # undersampled
@@ -91,106 +100,22 @@ class RealESRNetModel(SRModel):
             # ---------- The first degradation process (第一个退化过程) ------------------ #
             # blur
             out = filter2D(self.usp, self.kernel1)
-
-            # random resize(随机调整大小)
-            updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob'])[0]
-            if updown_type == 'up':
-                scale = np.random.uniform(1, self.opt['resize_range'][1])
-            elif updown_type == 'down':
-                scale = np.random.uniform(self.opt['resize_range'][0], 1)
-            else:
-                scale = 1
-            mode = random.choice(['area', 'bilinear', 'bicubic'])
-            out = F.interpolate(out, scale_factor=scale, mode=mode)
-
-            # add noise(添加噪声)
-            gray_noise_prob = self.opt['gray_noise_prob']
-            if np.random.uniform() < self.opt['gaussian_noise_prob']:
-                out = random_add_gaussian_noise_pt(
-                    out, sigma_range=self.opt['noise_range'], clip=True, rounds=False, gray_prob=gray_noise_prob)
-            else:
-                out = random_add_poisson_noise_pt(
-                    out,
-                    scale_range=self.opt['poisson_scale_range'],
-                    gray_prob=gray_noise_prob,
-                    clip=True,
-                    rounds=False)
-
-            # JPEG compression(压缩)
-            jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range'])
-            out = torch.clamp(out, 0, 1)  # clamp to [0, 1], otherwise JPEGer will result in unpleasant artifacts
-            out = self.jpeger(out, quality=jpeg_p)
-
             # ------------- The second degradation process (第二个退化过程) ------------- #
-            # blur(模糊)
-            if np.random.uniform() < self.opt['second_blur_prob']:
-                out = filter2D(out, self.kernel2)
-            # random resize(随机调整大小)
-            updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob2'])[0]
-            if updown_type == 'up':
-                scale = np.random.uniform(1, self.opt['resize_range2'][1])
-            elif updown_type == 'down':
-                scale = np.random.uniform(self.opt['resize_range2'][0], 1)
-            else:
-                scale = 1
-            mode = random.choice(['area', 'bilinear', 'bicubic'])
-            out = F.interpolate(
-                out, size=(int(ori_h / self.opt['scale'] * scale), int(ori_w / self.opt['scale'] * scale)), mode=mode)
-            # add noise(添加噪声)
-            gray_noise_prob = self.opt['gray_noise_prob2']
-            if np.random.uniform() < self.opt['gaussian_noise_prob2']:
-                out = random_add_gaussian_noise_pt(
-                    out, sigma_range=self.opt['noise_range2'], clip=True, rounds=False, gray_prob=gray_noise_prob)
-            else:
-                out = random_add_poisson_noise_pt(
-                    out,
-                    scale_range=self.opt['poisson_scale_range2'],
-                    gray_prob=gray_noise_prob,
-                    clip=True,
-                    rounds=False)
-
-            # JPEG compression + the final sinc filter
-            # We also need to resize images to desired sizes. We group [resize back + sinc filter] together
-            # as one operation.
-            # We consider two orders:
-            #   1. [resize back + sinc filter] + JPEG compression
-            #   2. JPEG compression + [resize back + sinc filter]
-            # Empirically, we find other combinations (sinc + JPEG + Resize) will introduce twisted lines.
-            if np.random.uniform() < 0.5:
-                # resize back + the final sinc filter
-                mode = random.choice(['area', 'bilinear', 'bicubic'])
-                out = F.interpolate(out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode)
-                out = filter2D(out, self.sinc_kernel)
-                # JPEG compression
-                jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range2'])
-                out = torch.clamp(out, 0, 1)
-                out = self.jpeger(out, quality=jpeg_p)
-            else:
-                # JPEG compression
-                jpeg_p = out.new_zeros(out.size(0)).uniform_(*self.opt['jpeg_range2'])
-                out = torch.clamp(out, 0, 1)
-                out = self.jpeger(out, quality=jpeg_p)
-                # resize back + the final sinc filter
-                mode = random.choice(['area', 'bilinear', 'bicubic'])
-                out = F.interpolate(out, size=(ori_h // self.opt['scale'], ori_w // self.opt['scale']), mode=mode)
-                out = filter2D(out, self.sinc_kernel)
 
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
 
-            # random crop
-            gt_size = self.opt['gt_size']
-            self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
-
-            # training pair pool
-            self._dequeue_and_enqueue()
-            self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
+        '''
+        lq_image = transforms.ToPILImage()(self.lq.cpu())  # Convert PyTorch tensor to PIL Image
+        plt.imshow(lq_image)
+        plt.show()
+        '''
         print("self.lq.shape: ", self.lq.shape)
         print("self.gt.shape: ", self.gt.shape)
 
@@ -210,6 +135,9 @@ class RealESRNetModel(SRModel):
 
         print(f"Image saved at: {save_path}")
         print(f"Image saved at: {save_path2}")
+
+
+
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
