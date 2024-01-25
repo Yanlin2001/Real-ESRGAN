@@ -168,7 +168,7 @@ is_train:
     save_img: True
 
 val:
-  val_freq: !!float 2e2
+  val_freq: !!float 5e2
   save_img: True
 
   metrics:
