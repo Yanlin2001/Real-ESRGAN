@@ -33,7 +33,7 @@ queue_size: 180
 datasets:
   train:
     name: MRI_Brain01
-    type: RealESRGANPairedDataset
+    type: RealESRGANDataset
     dataroot_gt: datasets/Brain_MRI_2024/train
     dataroot_lq: datasets/Brain_MRI_2024/train
     meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024_usp.txt
