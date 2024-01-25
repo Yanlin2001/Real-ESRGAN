@@ -8,7 +8,8 @@ from basicsr.utils import DiffJPEG, USMSharp
 from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
 from torch.nn import functional as F
-
+import matplotlib.pyplot as plt
+import torchvision.transforms as transforms
 
 @MODEL_REGISTRY.register()
 class RealESRNetModel(SRModel):
@@ -100,6 +101,10 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
+
+        lq_image = transforms.ToPILImage()(self.lq.cpu())  # Convert PyTorch tensor to PIL Image
+        plt.imshow(lq_image)
+        plt.show()
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
