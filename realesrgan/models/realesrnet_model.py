@@ -72,11 +72,6 @@ class RealESRNetModel(SRModel):
         接受来自数据加载器的数据，然后添加二阶降级以获得 LQ 图像。
         """
 
-        # Assuming self.lq is a PyTorch tensor
-        sample_index = 0  # Choose the index of the sample you want to visualize
-        # Get current time
-        current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
@@ -84,12 +79,19 @@ class RealESRNetModel(SRModel):
             # ++ lq data synthesis ++
             self.usp = data['lq'].to(self.device) # undersampled
 
+            """ 可视化输入退化流程图像
+            # Assuming self.lq is a PyTorch tensor
+            sample_index = 0  # Choose the index of the sample you want to visualize
+            # Get current time
+            current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
             usp_image = transforms.ToPILImage()(self.usp[sample_index].cpu())  # Convert to PIL Image
 
             # Save image with current time as filename
             save_path0 = f"/kaggle/working/usp_image_{current_time}.png"
             usp_image.save(save_path0)
             print(f"Image saved at: {save_path0}")
+            """
 
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
@@ -208,9 +210,10 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
+
+        """ 可视化训练图像
         print("self.lq.shape: ", self.lq.shape)
         print("self.gt.shape: ", self.gt.shape)
-
 
         lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
         gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
@@ -223,7 +226,7 @@ class RealESRNetModel(SRModel):
 
         print(f"Image saved at: {save_path}")
         print(f"Image saved at: {save_path2}")
-
+        """
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
