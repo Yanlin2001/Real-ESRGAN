@@ -107,14 +107,23 @@ class RealESRNetModel(SRModel):
         plt.show()
         '''
         print("self.lq.shape: ", self.lq.shape)
+        import datetime
         import matplotlib.pyplot as plt
         import torchvision.transforms as transforms
 
         # Assuming self.lq is a PyTorch tensor
         sample_index = 0  # Choose the index of the sample you want to visualize
         lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
-        plt.imshow(lq_image)
-        plt.show()
+
+        # Get current time
+        current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # Save image with current time as filename
+        save_path = f"/kaggle/working/lq_image_{current_time}.png"
+        lq_image.save(save_path)
+
+        print(f"Image saved at: {save_path}")
+
 
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
