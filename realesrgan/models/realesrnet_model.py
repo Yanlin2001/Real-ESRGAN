@@ -73,6 +73,16 @@ class RealESRNetModel(SRModel):
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
+            print("self.gt.shape: ", self.gt.shape)
+            import datetime
+            import matplotlib.pyplot as plt
+            import torchvision.transforms as transforms
+            sample_index = 0  # Choose the index of the sample you want to visualize
+            raw_gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
+            current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            save_path = f"/kaggle/working/raw_gt_image_{current_time}.png"
+            raw_gt_image.save(save_path)
+            print(f"Image saved at: {save_path}")
 
             # ++ lq data synthesis ++
             self.usp = data['lq'].to(self.device) # undersampled
@@ -108,9 +118,6 @@ class RealESRNetModel(SRModel):
         '''
         print("self.lq.shape: ", self.lq.shape)
         print("self.gt.shape: ", self.gt.shape)
-        import datetime
-        import matplotlib.pyplot as plt
-        import torchvision.transforms as transforms
 
         # Assuming self.lq is a PyTorch tensor
         sample_index = 0  # Choose the index of the sample you want to visualize
