@@ -107,6 +107,15 @@ class RealESRNetModel(SRModel):
         plt.show()
         '''
         print("self.lq.shape: ", self.lq.shape)
+        import matplotlib.pyplot as plt
+        import torchvision.transforms as transforms
+
+        # Assuming self.lq is a PyTorch tensor
+        sample_index = 0  # Choose the index of the sample you want to visualize
+        lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
+        plt.imshow(lq_image)
+        plt.show()
+
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
