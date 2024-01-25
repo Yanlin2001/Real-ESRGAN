@@ -107,6 +107,7 @@ class RealESRNetModel(SRModel):
         plt.show()
         '''
         print("self.lq.shape: ", self.lq.shape)
+        print("self.gt.shape: ", self.gt.shape)
         import datetime
         import matplotlib.pyplot as plt
         import torchvision.transforms as transforms
@@ -114,15 +115,20 @@ class RealESRNetModel(SRModel):
         # Assuming self.lq is a PyTorch tensor
         sample_index = 0  # Choose the index of the sample you want to visualize
         lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
+        gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
 
         # Get current time
         current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
         # Save image with current time as filename
         save_path = f"/kaggle/working/lq_image_{current_time}.png"
+        save_path2 = f"/kaggle/working/gt_image_{current_time}.png"
         lq_image.save(save_path)
+        gt_image.save(save_path2)
 
         print(f"Image saved at: {save_path}")
+        print(f"Image saved at: {save_path2}")
+
 
 
 
