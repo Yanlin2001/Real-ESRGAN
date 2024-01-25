@@ -71,12 +71,25 @@ class RealESRNetModel(SRModel):
         Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         接受来自数据加载器的数据，然后添加二阶降级以获得 LQ 图像。
         """
+
+        # Assuming self.lq is a PyTorch tensor
+        sample_index = 0  # Choose the index of the sample you want to visualize
+        # Get current time
+        current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
 
             # ++ lq data synthesis ++
             self.usp = data['lq'].to(self.device) # undersampled
+
+            usp_image = transforms.ToPILImage()(self.usp[sample_index].cpu())  # Convert to PIL Image
+
+            # Save image with current time as filename
+            save_path0 = f"/kaggle/working/usp_image_{current_time}.png"
+            usp_image.save(save_path0)
+            print(f"Image saved at: {save_path0}")
 
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
@@ -89,7 +102,7 @@ class RealESRNetModel(SRModel):
             ori_h, ori_w = self.usp.size()[2:4]
 
             # 对usp(lq)左右镜像
-            self.usp = torch.flip(self.usp, dims=[3])
+            # self.usp = torch.flip(self.usp, dims=[3])
 
             # ---------- The first degradation process (第一个退化过程) ------------------ #
             # blur
@@ -198,13 +211,9 @@ class RealESRNetModel(SRModel):
         print("self.lq.shape: ", self.lq.shape)
         print("self.gt.shape: ", self.gt.shape)
 
-        # Assuming self.lq is a PyTorch tensor
-        sample_index = 0  # Choose the index of the sample you want to visualize
+
         lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
         gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
-
-        # Get current time
-        current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 
         # Save image with current time as filename
         save_path = f"/kaggle/working/lq_image_{current_time}.png"
