@@ -88,6 +88,9 @@ class RealESRNetModel(SRModel):
 
             ori_h, ori_w = self.usp.size()[2:4]
 
+            # 对usp(lq)左右镜像
+            self.usp = torch.flip(self.usp, dims=[3])
+
             # ---------- The first degradation process (第一个退化过程) ------------------ #
             # blur
             out = filter2D(self.usp, self.kernel1)
@@ -186,8 +189,6 @@ class RealESRNetModel(SRModel):
             self._dequeue_and_enqueue()
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
 
-            # 对lq左右镜像
-            self.lq = torch.flip(self.lq, dims=[3])
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
