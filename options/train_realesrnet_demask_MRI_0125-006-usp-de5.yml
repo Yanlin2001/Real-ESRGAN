@@ -60,7 +60,7 @@ datasets:
     final_sinc_prob: 0.0
 
     gt_size: 256
-    use_hflip: True
+    use_hflip: False # Horizontal Flip(Left-Right Flip)，即水平翻转
     use_rot: False
 
     # data loader
