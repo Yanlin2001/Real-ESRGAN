@@ -185,6 +185,9 @@ class RealESRNetModel(SRModel):
             # training pair pool
             self._dequeue_and_enqueue()
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
+
+            # 对lq左右镜像
+            self.lq = torch.flip(self.lq, dims=[3])
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
