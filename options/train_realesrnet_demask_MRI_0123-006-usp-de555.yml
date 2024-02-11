@@ -34,9 +34,9 @@ datasets:
   train:
     name: MRI_Brain01
     type: RealESRGANDataset
-    dataroot_gt: datasets/Brain_MRI_2024/train
-    dataroot_lq: datasets/Brain_MRI_2024/train
-    meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024_usp.txt
+    dataroot_gt: datasets/random_fastMRI01/train
+    dataroot_lq: datasets/random_fastMRI01/train
+    meta_info: datasets/random_fastMRI01/meta_info/meta_info_MRI_Brain2024_usp.txt
     io_backend:
       type: disk
 
