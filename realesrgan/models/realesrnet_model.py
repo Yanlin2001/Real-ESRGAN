@@ -8,7 +8,9 @@ from basicsr.utils import DiffJPEG, USMSharp
 from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
 from torch.nn import functional as F
-
+import datetime
+import matplotlib.pyplot as plt
+import torchvision.transforms as transforms
 
 @MODEL_REGISTRY.register()
 class RealESRNetModel(SRModel):
@@ -69,9 +71,27 @@ class RealESRNetModel(SRModel):
         Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         接受来自数据加载器的数据，然后添加二阶降级以获得 LQ 图像。
         """
+
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
+
+            # ++ lq data synthesis ++
+            self.usp = data['lq'].to(self.device) # undersampled
+
+            """ 可视化输入退化流程图像
+            # Assuming self.lq is a PyTorch tensor
+            sample_index = 0  # Choose the index of the sample you want to visualize
+            # Get current time
+            current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+            usp_image = transforms.ToPILImage()(self.usp[sample_index].cpu())  # Convert to PIL Image
+
+            # Save image with current time as filename
+            save_path0 = f"/kaggle/working/usp_image_{current_time}.png"
+            usp_image.save(save_path0)
+            print(f"Image saved at: {save_path0}")
+            """
 
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
@@ -81,11 +101,14 @@ class RealESRNetModel(SRModel):
             self.kernel2 = data['kernel2'].to(self.device)
             self.sinc_kernel = data['sinc_kernel'].to(self.device)
 
-            ori_h, ori_w = self.gt.size()[2:4]
+            ori_h, ori_w = self.usp.size()[2:4]
+
+            # 对usp(lq)左右镜像
+            # self.usp = torch.flip(self.usp, dims=[3])
 
             # ---------- The first degradation process (第一个退化过程) ------------------ #
             # blur
-            out = filter2D(self.gt, self.kernel1)
+            out = filter2D(self.usp, self.kernel1)
 
             # random resize(随机调整大小)
             updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob'])[0]
@@ -180,6 +203,7 @@ class RealESRNetModel(SRModel):
             # training pair pool
             self._dequeue_and_enqueue()
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
+
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
@@ -187,6 +211,22 @@ class RealESRNetModel(SRModel):
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
 
+        """ 可视化训练图像
+        print("self.lq.shape: ", self.lq.shape)
+        print("self.gt.shape: ", self.gt.shape)
+
+        lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
+        gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
+
+        # Save image with current time as filename
+        save_path = f"/kaggle/working/lq_image_{current_time}.png"
+        save_path2 = f"/kaggle/working/gt_image_{current_time}.png"
+        lq_image.save(save_path)
+        gt_image.save(save_path2)
+
+        print(f"Image saved at: {save_path}")
+        print(f"Image saved at: {save_path2}")
+        """
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
