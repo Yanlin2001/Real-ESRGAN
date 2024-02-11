@@ -211,10 +211,10 @@ class RealESRNetModel(SRModel):
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
 
-        """ 可视化训练图像
+
         print("self.lq.shape: ", self.lq.shape)
         print("self.gt.shape: ", self.gt.shape)
-
+        """ 可视化训练图像
         lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())  # Convert to PIL Image
         gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())  # Convert to PIL Image
 
