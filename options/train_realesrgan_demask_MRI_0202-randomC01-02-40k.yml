@@ -17,7 +17,7 @@ datasets:
     type: RealESRGANPairedDataset
     dataroot_gt: datasets/random_fastMRI01/train
     dataroot_lq: datasets/random_fastMRI01/train
-    meta_info: datasets/random_fastMRI01/meta_info/meta_info_random_fastMRI01_pair.txt
+    meta_info: datasets/meta_info/div2k-sub.txt
     io_backend:
       type: disk
 
