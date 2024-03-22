@@ -36,7 +36,6 @@ datasets:
     name: CT
     type: RealESRGANDataset
     dataroot_gt: /kaggle/input
-    dataroot_lq: /kaggle/input
     meta_info: datasets/meta_info/div2k-sub.txt
     io_backend:
       type: disk
